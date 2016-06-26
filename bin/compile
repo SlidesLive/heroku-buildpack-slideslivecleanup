@@ -1,0 +1,35 @@
+#!/bin/bash
+
+BUILD_DIR="$1"
+ENV_DIR="$3"
+
+indent() {
+    sed -u 's/^/       /'
+}
+
+if [ ! -d "$ENV_DIR" ]; then
+    echo "-----> SlidesLive cleanup skipped. ENV dir does not exist."
+    exit 0
+fi
+
+if [ ! -f "$ENV_DIR/SLIDESLIVE_STAGING" ]; then
+    echo "-----> SlidesLive cleanup skipped. SLIDESLIVE_STAGING does not exist."
+fi
+
+SLIDESLIVE_STAGING=$(cat "$ENV_DIR/SLIDESLIVE_STAGING")
+
+if [ -z "$SLIDESLIVE_STAGING" ]; then
+    environment="production"
+    to_remove_assets_dir="$BUILD_DIR/public/staging-assets"
+else
+    environment="staging"
+    to_remove_assets_dir="$BUILD_DIR/public/assets"
+fi
+
+echo "-----> Cleaning up SlidesLive $environment environtment..."
+
+echo "Removing $to_remove_assets_dir..." | indent
+rm -rf "$to_remove_assets_dir"
+
+echo
+
